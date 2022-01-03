@@ -2,10 +2,11 @@ package com.chickenfarms.chickenfarms.controller;
 
 
 import com.chickenfarms.chickenfarms.exception.DBException;
+import com.chickenfarms.chickenfarms.exception.InnerServiceException;
 import com.chickenfarms.chickenfarms.exception.InvalidRequestException;
 import com.chickenfarms.chickenfarms.exception.RecordNotFoundException;
 import com.chickenfarms.chickenfarms.model.DTO.CreateTicketDetailsDTO;
-import com.chickenfarms.chickenfarms.model.DTO.TicketTagsRequestDTO;
+import com.chickenfarms.chickenfarms.model.entities.Tag;
 import com.chickenfarms.chickenfarms.model.entities.Ticket;
 import com.chickenfarms.chickenfarms.service.TicketEditService;
 import com.chickenfarms.chickenfarms.service.TicketLifecycleStateService;
@@ -14,6 +15,7 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.List;
 
 @RestController
 @RequestMapping("/chickenFarms")
@@ -43,9 +45,9 @@ public class ChickenFarmsController {
     }
     
     //make it request paharam
-    @PostMapping(value = "/addTagsToTicket",consumes = {MediaType.APPLICATION_JSON_VALUE})
-    public boolean addTagsToTicket(@RequestBody @Valid TicketTagsRequestDTO ticketTagsRequestDTO) throws RecordNotFoundException {
-        return ticketEditService.addTags(ticketTagsRequestDTO);
+    @PostMapping(value = "/addTagsToTicket")
+    public List<Tag> addTagsToTicket(@RequestParam("ticket_id") @Valid long ticket, @RequestParam("tags") @Valid List<String> tags) throws RecordNotFoundException, InnerServiceException {
+        return ticketEditService.addTags(ticket,tags);
     }
     
     @PostMapping(value = "/moveToReady")

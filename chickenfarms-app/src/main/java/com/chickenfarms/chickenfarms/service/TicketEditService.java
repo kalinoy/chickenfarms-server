@@ -1,9 +1,12 @@
 package com.chickenfarms.chickenfarms.service;
 
+import com.chickenfarms.chickenfarms.exception.InnerServiceException;
 import com.chickenfarms.chickenfarms.exception.RecordNotFoundException;
-import com.chickenfarms.chickenfarms.model.DTO.TicketTagsRequestDTO;
+import com.chickenfarms.chickenfarms.model.entities.Tag;
+
+import java.util.List;
 
 public interface TicketEditService {
 
-    boolean addTags(TicketTagsRequestDTO ticketTagsRequestDTO) throws RecordNotFoundException;
+    List<Tag> addTags(long ticketId, List<String> tags) throws RecordNotFoundException, InnerServiceException;
 }
