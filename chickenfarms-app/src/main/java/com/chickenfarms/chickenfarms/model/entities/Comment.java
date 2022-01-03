@@ -1,4 +1,4 @@
-package com.chickenfarms.chickenfarms.model;
+package com.chickenfarms.chickenfarms.model.entities;
 
 
 import lombok.AllArgsConstructor;

@@ -1,6 +1,7 @@
-package com.chickenfarms.chickenfarms.model;
+package com.chickenfarms.chickenfarms.model.entities;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -11,6 +12,7 @@ import java.util.Set;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
+@Builder
 @Table(name="RootCauseTable")
 public class RootCause {
     
