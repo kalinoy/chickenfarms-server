@@ -48,9 +48,10 @@ public class TestUtils {
         return CustomersInTicket.builder().pk(customerInTicketPKId).customer(customer).build();
     }
     
-    public static void dbValidationMockTicket(CreateTicketDetailsDTO createTicketDetailsDTO, TicketStatus ticketStatus, DBValidation dbValidation) throws RecordNotFoundException {
+    public static Ticket getMockedTicket(CreateTicketDetailsDTO createTicketDetailsDTO, TicketStatus ticketStatus, DBValidation dbValidation) throws RecordNotFoundException {
         Ticket ticket = getTicketFromCreatedTicketDTO(createTicketDetailsDTO, ticketStatus);
         when(dbValidation.getTicket(Mockito.anyLong())).thenReturn(ticket);
+        return ticket;
     }
     
     public static Ticket getTicketFromCreatedTicketDTO(CreateTicketDetailsDTO createTicketDetailsDTO, TicketStatus ticketStatus) {

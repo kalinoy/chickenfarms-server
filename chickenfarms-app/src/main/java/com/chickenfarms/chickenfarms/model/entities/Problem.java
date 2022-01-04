@@ -6,6 +6,8 @@ import javax.persistence.*;
 import java.util.Set;
 
 @Getter
+@NoArgsConstructor
+@AllArgsConstructor
 @Builder
 @Entity
 @Table(name="ProblemTable")

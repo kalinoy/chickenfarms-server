@@ -7,9 +7,12 @@ import javax.persistence.*;
 import java.util.*;
 
 @Builder
+//@Data
 @Getter
 @Setter
 @Entity
+@NoArgsConstructor
+@AllArgsConstructor
 @Table(name = "TicketTable")
 public class Ticket  {
 
