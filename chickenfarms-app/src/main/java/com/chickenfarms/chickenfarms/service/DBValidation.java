@@ -4,14 +4,8 @@ import com.chickenfarms.chickenfarms.exception.DBException;
 import com.chickenfarms.chickenfarms.exception.RecordNotFoundException;
 import com.chickenfarms.chickenfarms.model.Customer;
 import com.chickenfarms.chickenfarms.model.DTO.CreateTicketDetailsDTO;
-import com.chickenfarms.chickenfarms.model.entities.CustomersInTicket;
-import com.chickenfarms.chickenfarms.model.entities.Problem;
-import com.chickenfarms.chickenfarms.model.entities.Ticket;
-import com.chickenfarms.chickenfarms.model.entities.User;
-import com.chickenfarms.chickenfarms.repository.CustomerRepository;
-import com.chickenfarms.chickenfarms.repository.ProblemRepository;
-import com.chickenfarms.chickenfarms.repository.TicketRepository;
-import com.chickenfarms.chickenfarms.repository.UserRepository;
+import com.chickenfarms.chickenfarms.model.entities.*;
+import com.chickenfarms.chickenfarms.repository.*;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -26,13 +20,16 @@ public class DBValidation {
     private ProblemRepository problemRepository;
     private UserRepository userRepository;
     private CustomerRepository customerRepository;
-    
+    private TagRepository tagRepository;
+    private RootCauseRepository rootCauseRepository;
     @Autowired
-    public DBValidation(TicketRepository ticketRepository, ProblemRepository problemRepository, UserRepository userRepository, CustomerRepository customerRepository){
+    public DBValidation(TicketRepository ticketRepository, ProblemRepository problemRepository, UserRepository userRepository, CustomerRepository customerRepository,TagRepository tagRepository,RootCauseRepository rootCauseRepository){
         this.ticketRepository=ticketRepository;
         this.problemRepository=problemRepository;
         this.userRepository=userRepository;
         this.customerRepository=customerRepository;
+        this.tagRepository=tagRepository;
+        this.rootCauseRepository=rootCauseRepository;
     }
     //Maybe make the class util?
     
@@ -71,6 +68,14 @@ public class DBValidation {
 //        }
 //        return ticket.get();
     
+    }
+    
+    public Tag getTag(String tagName) throws RecordNotFoundException {
+        return tagRepository.findById(tagName).orElseThrow(()->new RecordNotFoundException("Tag doesn't exist in Tag table."));
+    }
+    
+    public RootCause getRootCause(String rootCause) throws RecordNotFoundException {
+        return rootCauseRepository.findByRootCauseName(rootCause).orElseThrow(()->new RecordNotFoundException("Root cause doesn't exist in root cause table"));
     }
     
     public boolean isInsertAllCustomersInTicket(int createTicketDetailsCustomersSize, int customersInTicketsSize) throws DBException {

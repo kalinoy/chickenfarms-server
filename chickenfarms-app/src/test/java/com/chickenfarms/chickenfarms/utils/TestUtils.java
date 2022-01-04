@@ -28,8 +28,8 @@ public class TestUtils {
         return Customer.builder().customerId(customerId).customerUsername(username).build();
     }
     
-    public static Ticket getTicket(long ticketId, int farmId){
-        return Ticket.builder().ticketId(ticketId).farmId(farmId).status(TicketStatus.READY.getTicketStatus()).build();
+    public static Ticket  getTicket(long ticketId, int farmId){
+        return Ticket.builder().ticketId(ticketId).farmId(farmId).status(TicketStatus.READY.getTicketStatus()).createdDate(new Date(System.currentTimeMillis())).build();
     }
     
     public static RootCause getRootCause(int rootCauseId,String rootCauseName){
@@ -40,6 +40,10 @@ public class TestUtils {
     public static Tag getTag(String tagName,long ticketId){
         Ticket ticket=getTicket(ticketId,2);
         return Tag.builder().tagName(tagName).tickets(new HashSet<>(Arrays.asList(ticket))).build();
+    }
+    
+    public static Comment getComment(Ticket ticket){
+        return Comment.builder().commentId(0).commentText("Test comment").ticket(ticket).build();
     }
     
     public static CustomersInTicket getCustomerInTicket(long ticketId,long customerId){
