@@ -50,10 +50,10 @@ public class TicketLifecycleStateServiceImpl implements TicketLifecycleStateServ
     public Ticket moveTicketToCloseStatus(long ticketId,boolean isResolved) throws RecordNotFoundException, InvalidRequestException {
         Ticket ticket=dbValidation.getTicket(ticketId);
         validTicketStatus(ticket,TicketStatus.READY);
-        ticket.setStatus(TicketStatus.CLOSED.getTicketStatus());
-        ticket.setResolved(isResolved);
+        setCloseTicketValue(isResolved, ticket);
         return ticketRepository.save(ticket);
     }
+    
     
     @Override
     //move akso the tags
@@ -70,7 +70,6 @@ public class TicketLifecycleStateServiceImpl implements TicketLifecycleStateServ
         }
     }
     
-
     
     
     private Ticket updateExistRootCause(RootCause rootCause, Ticket requestTicket) {
@@ -175,6 +174,12 @@ public class TicketLifecycleStateServiceImpl implements TicketLifecycleStateServ
             customersInTickets.add(customersInTicketRepository.save(customerInTicket));
         }
         return customersInTickets;
+    }
+    
+    private void setCloseTicketValue(boolean isResolved, Ticket ticket) {
+        ticket.setStatus(TicketStatus.CLOSED.getTicketStatus());
+        ticket.setResolved(isResolved);
+        ticket.setLastUpdatedDate(new Date(System.currentTimeMillis()));
     }
     
     
