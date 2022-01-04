@@ -3,13 +3,8 @@ package com.chickenfarms.chickenfarms.unitTests.service;
 import com.chickenfarms.chickenfarms.exception.DBException;
 import com.chickenfarms.chickenfarms.exception.RecordNotFoundException;
 import com.chickenfarms.chickenfarms.model.Customer;
-import com.chickenfarms.chickenfarms.model.entities.Problem;
-import com.chickenfarms.chickenfarms.model.entities.Ticket;
-import com.chickenfarms.chickenfarms.model.entities.User;
-import com.chickenfarms.chickenfarms.repository.CustomerRepository;
-import com.chickenfarms.chickenfarms.repository.ProblemRepository;
-import com.chickenfarms.chickenfarms.repository.TicketRepository;
-import com.chickenfarms.chickenfarms.repository.UserRepository;
+import com.chickenfarms.chickenfarms.model.entities.*;
+import com.chickenfarms.chickenfarms.repository.*;
 import com.chickenfarms.chickenfarms.service.DBValidation;
 import com.chickenfarms.chickenfarms.utils.TestUtils;
 import org.junit.jupiter.api.Test;
@@ -37,6 +32,10 @@ public class DBValidationTest {
     private UserRepository userRepository;
     @Mock
     private CustomerRepository customerRepository;
+    @Mock
+    private TagRepository tagRepository;
+    @Mock
+    private RootCauseRepository rootCauseRepository;
     
     
     @Test
@@ -130,6 +129,52 @@ public class DBValidationTest {
         when(ticketRepository.findById(Mockito.anyLong())).thenReturn(Optional.empty());
         try{
             Ticket ticket=dbValidation.getTicket(5487L);
+        }
+        catch (Exception e) {
+            assertThatExceptionOfType(RecordNotFoundException.class);
+        }
+    }
+    
+    @Test
+    public void successfulGetTagTest(){
+        Tag tagInDB=TestUtils.getTag("Tag",1);
+        when(tagRepository.findById("Tag")).thenReturn(Optional.of(tagInDB));
+        try {
+            Tag tag=dbValidation.getTag("Tag");
+            assertThat(tag).isNotNull();
+        } catch (Exception e) {
+            fail("Failed to get tag from DB: "+e.getMessage());
+        }
+    }
+    
+    @Test
+    public void failedGetTagTest(){
+        when(tagRepository.findById("Tag")).thenReturn(Optional.empty());
+        try{
+            Tag tag=dbValidation.getTag("Tag");
+        }
+        catch (Exception e) {
+            assertThatExceptionOfType(RecordNotFoundException.class);
+        }
+    }
+    
+    @Test
+    public void successfulGetRootCauseTest(){
+        RootCause rootCauseInDB=TestUtils.getRootCause(1,"Bad user name");
+        when(rootCauseRepository.findByRootCauseName("Bad user name")).thenReturn(Optional.of(rootCauseInDB));
+        try {
+            RootCause rootCause=dbValidation.getRootCause("Bad user name");
+            assertThat(rootCause).isNotNull();
+        } catch (Exception e) {
+            fail("Failed to get root cause from DB: "+e.getMessage());
+        }
+    }
+    
+    @Test
+    public void failedGetRootCauseTest(){
+        when(rootCauseRepository.findByRootCauseName("Bad user name")).thenReturn(Optional.empty());
+        try{
+            RootCause rootCause=dbValidation.getRootCause("Bad user name");
         }
         catch (Exception e) {
             assertThatExceptionOfType(RecordNotFoundException.class);
