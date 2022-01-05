@@ -3,11 +3,11 @@ package com.chickenfarms.chickenfarms.unitTests.service;
 import com.chickenfarms.chickenfarms.enums.TicketStatus;
 import com.chickenfarms.chickenfarms.exception.InnerServiceException;
 import com.chickenfarms.chickenfarms.exception.RecordNotFoundException;
+import com.chickenfarms.chickenfarms.model.TicketBusinessDetails;
 import com.chickenfarms.chickenfarms.model.entities.Tag;
 import com.chickenfarms.chickenfarms.model.entities.Ticket;
 import com.chickenfarms.chickenfarms.repository.TagRepository;
 import com.chickenfarms.chickenfarms.repository.TicketRepository;
-import com.chickenfarms.chickenfarms.service.TicketTagService;
 import com.chickenfarms.chickenfarms.service.impl.TicketTagServiceImp;
 import com.chickenfarms.chickenfarms.utils.TestUtils;
 import org.junit.jupiter.api.Test;
@@ -17,10 +17,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
@@ -44,6 +41,7 @@ public class TicketTagServiceTest {
             Ticket mockedTicket=TestUtils.getMockedTicket(ticketRepository,TicketStatus.READY);
             when(tagRepository.findById(Mockito.anyString())).thenReturn(Optional.empty());
             List<Tag> savesTags=getSavedTags(mockedTicket.getTicketId());
+            assertThat(savesTags.size()).isEqualTo(2);
             savesTags.stream().forEach(tag -> {
                 Mockito.verify(tagRepository).save(tag);
                 assertThat(tag.getTickets().size()).isEqualTo(1);
@@ -55,12 +53,13 @@ public class TicketTagServiceTest {
     }
     
     @Test
-    public void updateTagsTest(){
+    public void updateExistingTagTest(){
         try {
             Ticket mockTicket=TestUtils.getMockedTicket(ticketRepository,TicketStatus.READY);
             mockTagByRepository("check again",1);
             mockTagByRepository("invalid issue",2);
             List<Tag> savesTags = getSavedTags(mockTicket.getTicketId());
+            assertThat(savesTags.size()).isEqualTo(2);
             savesTags.stream().forEach(tag -> {
                 Mockito.verify(tagRepository).save(tag);
                 assertThat(tag.getTickets().size()).isEqualTo(2);
@@ -95,8 +94,7 @@ public class TicketTagServiceTest {
     
     private List<Tag> getSavedTags(long ticketId) throws RecordNotFoundException, InnerServiceException {
         List<String> tags=new ArrayList<>(Arrays.asList("Check again","Invalid issue"));
-        List<Tag> savesTags=ticketTagServiceImp.addTags(ticketId,tags);
-        return savesTags;
+        return ticketTagServiceImp.addTags(ticketId,tags);
     }
     
     private void mockTagByRepository(String tagName,long ticketId) {

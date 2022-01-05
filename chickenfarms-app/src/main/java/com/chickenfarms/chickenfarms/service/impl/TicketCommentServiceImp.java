@@ -2,7 +2,10 @@ package com.chickenfarms.chickenfarms.service.impl;
 
 import com.chickenfarms.chickenfarms.exception.InvalidRequestException;
 import com.chickenfarms.chickenfarms.exception.RecordNotFoundException;
+import com.chickenfarms.chickenfarms.model.CommentBusinessDetails;
+import com.chickenfarms.chickenfarms.model.TicketBusinessDetails;
 import com.chickenfarms.chickenfarms.model.entities.Comment;
+import com.chickenfarms.chickenfarms.model.entities.Tag;
 import com.chickenfarms.chickenfarms.model.entities.Ticket;
 import com.chickenfarms.chickenfarms.model.entities.User;
 import com.chickenfarms.chickenfarms.repository.CommentRepository;
@@ -14,8 +17,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.chickenfarms.chickenfarms.utils.PageLimitUtils;
 
-import java.util.Date;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class TicketCommentServiceImp implements TicketCommentService {
@@ -42,12 +45,11 @@ public class TicketCommentServiceImp implements TicketCommentService {
     }
     
     @Override
-    public List<Comment> getTicketComments(long ticketId,int pageNumber) throws RecordNotFoundException, InvalidRequestException {
+    public List<Comment> getTicketComments(long ticketId, int pageNumber) throws RecordNotFoundException, InvalidRequestException {
         Ticket ticket= DbValidationUtils.getTicket(ticketRepository,ticketId);
         int startIndex= PageLimitUtils.getStartPageLimit(pageNumber);
         int endIndex=PageLimitUtils.getEndPageLimit(pageNumber);
         return commentRepository.getSortedCommentsByPage(ticket.getTicketId(),startIndex,endIndex);
     }
-    
     
 }

@@ -14,6 +14,7 @@ import com.chickenfarms.chickenfarms.repository.TagRepository;
 import com.chickenfarms.chickenfarms.repository.TicketRepository;
 import com.chickenfarms.chickenfarms.utils.DbValidationUtils;
 import com.chickenfarms.chickenfarms.service.TicketViewService;
+import com.chickenfarms.chickenfarms.utils.BusinessDetailsConverterUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.chickenfarms.chickenfarms.utils.PageLimitUtils;
@@ -38,12 +39,10 @@ public class TicketViewServiceImp implements TicketViewService {
     }
     
     @Override
-    public Set<TicketBusinessDetails> getTicketsByPage(int pageNumber) {
+    public Set<Ticket> getTicketsByPage(int pageNumber) {
         int startIndex= PageLimitUtils.getStartPageLimit(pageNumber);
         int endIndex=PageLimitUtils.getEndPageLimit(pageNumber);
-        Set<Ticket> ticketsByPage= ticketRepository.getTicketsByPage(startIndex,endIndex);
-        Set<TicketBusinessDetails> ticketsBusinessDetails = getTicketsBusinessList(ticketsByPage);
-        return ticketsBusinessDetails;
+        return ticketRepository.getTicketsByPage(startIndex,endIndex);
     }
     
     @Override
@@ -60,7 +59,7 @@ public class TicketViewServiceImp implements TicketViewService {
     public Set<Ticket> getTicketsByTag(String tagName, int pageNumber) throws RecordNotFoundException {
         Tag tag= DbValidationUtils.getTag(tagRepository,tagName);
         Set<Ticket> ticketsInTag=tag.getTickets();
-        return getReturnedTicketsToUser(pageNumber, ticketsInTag);
+        return getSortedTicketsInPage(pageNumber, ticketsInTag);
     }
     
     @Override
@@ -74,17 +73,17 @@ public class TicketViewServiceImp implements TicketViewService {
     public Set<Ticket> getTicketsByProblem(int problemId, int pageNumber) throws RecordNotFoundException {
         Problem problem= DbValidationUtils.getProblem(problemRepository,problemId);
         Set<Ticket> ticketsInProblem=problem.getTickets();
-        return getReturnedTicketsToUser(pageNumber,ticketsInProblem);
+        return getSortedTicketsInPage(pageNumber,ticketsInProblem);
     }
     
     @Override
     public Set<Ticket> getTicketsByRootCause(String rootCauseName, int pageNumber) throws RecordNotFoundException {
         RootCause rootCause= DbValidationUtils.getRootCause(rootCauseRepository,rootCauseName);
         Set<Ticket> ticketsInRootCause=rootCause.getTickets();
-        return getReturnedTicketsToUser(pageNumber,ticketsInRootCause);
+        return getSortedTicketsInPage(pageNumber,ticketsInRootCause);
     }
     
-    private Set<Ticket> getReturnedTicketsToUser(int pageNumber, Set<Ticket> ticketsInTag) {
+    private Set<Ticket> getSortedTicketsInPage(int pageNumber, Set<Ticket> ticketsInTag) {
         Comparator<Ticket> comparator = getTicketComparator();
         int startIndex= PageLimitUtils.getStartPageLimit(pageNumber);
         int endIndex=PageLimitUtils.getEndPageLimit(pageNumber);
@@ -103,33 +102,33 @@ public class TicketViewServiceImp implements TicketViewService {
         return ticketStatus.isPresent();
     }
     
-    private Set<TicketBusinessDetails> getTicketsBusinessList(Set<Ticket> ticketsByPage) {
-        Set<TicketBusinessDetails> ticketsBusinessDetails=new HashSet<>();
-        ticketsByPage.forEach(ticket -> {
-            List<String> ticketTagsName=ticket.getTags().stream().map(Tag::getTagName).collect(Collectors.toList());
-            TicketBusinessDetails ticketBusinessDetails=TicketBusinessDetails.builder().ticketId(ticket.getTicketId()).description(ticket.getDescription()).farmId(ticket.getFarmId()).status(ticket.getStatus()).tagsName(ticketTagsName).problemId(ticket.getProblem().getProblemId()).userName(ticket.getUser().getUserName()).build();
-            setAdditionalTicketBusinessDetails(ticket, ticketBusinessDetails);
-            ticketsBusinessDetails.add(ticketBusinessDetails);
-        });
-        return ticketsBusinessDetails;
-    }
-    
-    private void setAdditionalTicketBusinessDetails(Ticket ticket, TicketBusinessDetails ticketBusinessDetails) {
-        if(isClosedOrReadyStatus(ticket)){
-            ticketBusinessDetails.setSla(ticket.getSla());
-            ticketBusinessDetails.setGrade(ticket.getGrade());
-            ticketBusinessDetails.setRootCauseName(ticket.getRootCause().getRootCauseName());
-        }
-        if(isStatus(ticket, TicketStatus.CLOSED)){
-            ticketBusinessDetails.setResolved(ticket.isResolved());
-        }
-    }
-    
-    private boolean isClosedOrReadyStatus(Ticket ticket) {
-        return isStatus(ticket, TicketStatus.CLOSED) || isStatus(ticket, TicketStatus.READY);
-    }
-    
-    private boolean isStatus(Ticket ticket, TicketStatus ticketStatus) {
-        return ticket.getStatus().equals(ticketStatus.getTicketStatus());
-    }
+//    private Set<TicketBusinessDetails> getTicketsBusinessList(Set<Ticket> ticketsByPage) {
+//        Set<TicketBusinessDetails> ticketsBusinessDetails=new HashSet<>();
+//        ticketsByPage.forEach(ticket -> {
+//            List<String> ticketTagsName=ticket.getTags().stream().map(Tag::getTagName).collect(Collectors.toList());
+//            TicketBusinessDetails ticketBusinessDetails=TicketBusinessDetails.builder().ticketId(ticket.getTicketId()).description(ticket.getDescription()).farmId(ticket.getFarmId()).status(ticket.getStatus()).tagsName(ticketTagsName).problemId(ticket.getProblem().getProblemId()).userName(ticket.getUser().getUserName()).build();
+//            setAdditionalTicketBusinessDetails(ticket, ticketBusinessDetails);
+//            ticketsBusinessDetails.add(ticketBusinessDetails);
+//        });
+//        return ticketsBusinessDetails;
+//    }
+//    
+//    private void setAdditionalTicketBusinessDetails(Ticket ticket, TicketBusinessDetails ticketBusinessDetails) {
+//        if(isClosedOrReadyStatus(ticket)){
+//            ticketBusinessDetails.setSla(ticket.getSla());
+//            ticketBusinessDetails.setGrade(ticket.getGrade());
+//            ticketBusinessDetails.setRootCauseName(ticket.getRootCause().getRootCauseName());
+//        }
+//        if(isStatus(ticket, TicketStatus.CLOSED)){
+//            ticketBusinessDetails.setResolved(ticket.isResolved());
+//        }
+//    }
+//    
+//    private boolean isClosedOrReadyStatus(Ticket ticket) {
+//        return isStatus(ticket, TicketStatus.CLOSED) || isStatus(ticket, TicketStatus.READY);
+//    }
+//    
+//    private boolean isStatus(Ticket ticket, TicketStatus ticketStatus) {
+//        return ticket.getStatus().equals(ticketStatus.getTicketStatus());
+//    }
 }

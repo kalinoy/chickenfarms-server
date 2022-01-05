@@ -11,6 +11,8 @@ import java.util.Date;
 @Table(name = "CustomersInTicketTable")
 @Getter
 @Setter
+@AllArgsConstructor
+@NoArgsConstructor
 @Builder
 public class CustomersInTicket {
     
@@ -24,7 +26,7 @@ public class CustomersInTicket {
     
     @ManyToOne
     @JoinColumn(name = "customer_customer_id", nullable = false)
-    @MapsId("customer_Id")
+    @MapsId("customerId")
     private Customer customer;
     
     
