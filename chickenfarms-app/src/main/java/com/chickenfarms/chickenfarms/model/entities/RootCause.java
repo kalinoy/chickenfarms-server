@@ -1,14 +1,12 @@
 package com.chickenfarms.chickenfarms.model.entities;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.*;
 import java.util.Set;
 
-@Data
+@Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
@@ -18,10 +16,10 @@ public class RootCause {
     
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name="rootCauseId",insertable = false, updatable = false)
+    @Column(name="root_cause_id",insertable = false, updatable = false)
     private int rootCauseId;
     
-    @Column(name = "rootCauseName")
+    @Column(name = "root_cause_name")
     private String rootCauseName;
     
     @OneToMany(mappedBy = "rootCause", fetch = FetchType.LAZY)

@@ -3,17 +3,20 @@ package com.chickenfarms.chickenfarms.service.impl;
 import com.chickenfarms.chickenfarms.enums.TicketStatus;
 import com.chickenfarms.chickenfarms.exception.InvalidRequestException;
 import com.chickenfarms.chickenfarms.exception.RecordNotFoundException;
+import com.chickenfarms.chickenfarms.model.TicketBusinessDetails;
 import com.chickenfarms.chickenfarms.model.entities.Problem;
 import com.chickenfarms.chickenfarms.model.entities.RootCause;
 import com.chickenfarms.chickenfarms.model.entities.Tag;
 import com.chickenfarms.chickenfarms.model.entities.Ticket;
+import com.chickenfarms.chickenfarms.repository.ProblemRepository;
+import com.chickenfarms.chickenfarms.repository.RootCauseRepository;
 import com.chickenfarms.chickenfarms.repository.TagRepository;
 import com.chickenfarms.chickenfarms.repository.TicketRepository;
-import com.chickenfarms.chickenfarms.service.DBValidation;
+import com.chickenfarms.chickenfarms.utils.DbValidationUtils;
 import com.chickenfarms.chickenfarms.service.TicketViewService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import utils.PageLimitUtils;
+import com.chickenfarms.chickenfarms.utils.PageLimitUtils;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -22,13 +25,25 @@ import java.util.stream.Collectors;
 public class TicketViewServiceImp implements TicketViewService {
 
     TicketRepository ticketRepository;
-    DBValidation dbValidation;
-    
+    TagRepository tagRepository;
+    ProblemRepository problemRepository;
+    RootCauseRepository rootCauseRepository;
     
     @Autowired
-    public TicketViewServiceImp(DBValidation dbValidation,TicketRepository ticketRepository){
+    public TicketViewServiceImp(TicketRepository ticketRepository,TagRepository tagRepository,ProblemRepository problemRepository,RootCauseRepository rootCauseRepository){
         this.ticketRepository=ticketRepository;
-        this.dbValidation=dbValidation;
+        this.tagRepository=tagRepository;
+        this.problemRepository=problemRepository;
+        this.rootCauseRepository=rootCauseRepository;
+    }
+    
+    @Override
+    public Set<TicketBusinessDetails> getTicketsByPage(int pageNumber) {
+        int startIndex= PageLimitUtils.getStartPageLimit(pageNumber);
+        int endIndex=PageLimitUtils.getEndPageLimit(pageNumber);
+        Set<Ticket> ticketsByPage= ticketRepository.getTicketsByPage(startIndex,endIndex);
+        Set<TicketBusinessDetails> ticketsBusinessDetails = getTicketsBusinessList(ticketsByPage);
+        return ticketsBusinessDetails;
     }
     
     @Override
@@ -43,7 +58,7 @@ public class TicketViewServiceImp implements TicketViewService {
     
     @Override
     public Set<Ticket> getTicketsByTag(String tagName, int pageNumber) throws RecordNotFoundException {
-        Tag tag=dbValidation.getTag(tagName);
+        Tag tag= DbValidationUtils.getTag(tagRepository,tagName);
         Set<Ticket> ticketsInTag=tag.getTickets();
         return getReturnedTicketsToUser(pageNumber, ticketsInTag);
     }
@@ -57,14 +72,14 @@ public class TicketViewServiceImp implements TicketViewService {
     
     @Override
     public Set<Ticket> getTicketsByProblem(int problemId, int pageNumber) throws RecordNotFoundException {
-        Problem problem=dbValidation.getProblem(problemId);
+        Problem problem= DbValidationUtils.getProblem(problemRepository,problemId);
         Set<Ticket> ticketsInProblem=problem.getTickets();
         return getReturnedTicketsToUser(pageNumber,ticketsInProblem);
     }
     
     @Override
     public Set<Ticket> getTicketsByRootCause(String rootCauseName, int pageNumber) throws RecordNotFoundException {
-        RootCause rootCause=dbValidation.getRootCause(rootCauseName);
+        RootCause rootCause= DbValidationUtils.getRootCause(rootCauseRepository,rootCauseName);
         Set<Ticket> ticketsInRootCause=rootCause.getTickets();
         return getReturnedTicketsToUser(pageNumber,ticketsInRootCause);
     }
@@ -86,5 +101,35 @@ public class TicketViewServiceImp implements TicketViewService {
     private boolean isValidStatus(String status){ 
         Optional<TicketStatus> ticketStatus=Arrays.stream(TicketStatus.values()).filter(ticketStatusValue -> ticketStatusValue.getTicketStatus().equals(status)).findAny();
         return ticketStatus.isPresent();
+    }
+    
+    private Set<TicketBusinessDetails> getTicketsBusinessList(Set<Ticket> ticketsByPage) {
+        Set<TicketBusinessDetails> ticketsBusinessDetails=new HashSet<>();
+        ticketsByPage.forEach(ticket -> {
+            List<String> ticketTagsName=ticket.getTags().stream().map(Tag::getTagName).collect(Collectors.toList());
+            TicketBusinessDetails ticketBusinessDetails=TicketBusinessDetails.builder().ticketId(ticket.getTicketId()).description(ticket.getDescription()).farmId(ticket.getFarmId()).status(ticket.getStatus()).tagsName(ticketTagsName).problemId(ticket.getProblem().getProblemId()).userName(ticket.getUser().getUserName()).build();
+            setAdditionalTicketBusinessDetails(ticket, ticketBusinessDetails);
+            ticketsBusinessDetails.add(ticketBusinessDetails);
+        });
+        return ticketsBusinessDetails;
+    }
+    
+    private void setAdditionalTicketBusinessDetails(Ticket ticket, TicketBusinessDetails ticketBusinessDetails) {
+        if(isClosedOrReadyStatus(ticket)){
+            ticketBusinessDetails.setSla(ticket.getSla());
+            ticketBusinessDetails.setGrade(ticket.getGrade());
+            ticketBusinessDetails.setRootCauseName(ticket.getRootCause().getRootCauseName());
+        }
+        if(isStatus(ticket, TicketStatus.CLOSED)){
+            ticketBusinessDetails.setResolved(ticket.isResolved());
+        }
+    }
+    
+    private boolean isClosedOrReadyStatus(Ticket ticket) {
+        return isStatus(ticket, TicketStatus.CLOSED) || isStatus(ticket, TicketStatus.READY);
+    }
+    
+    private boolean isStatus(Ticket ticket, TicketStatus ticketStatus) {
+        return ticket.getStatus().equals(ticketStatus.getTicketStatus());
     }
 }

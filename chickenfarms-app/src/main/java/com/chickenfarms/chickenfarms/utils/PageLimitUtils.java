@@ -1,4 +1,4 @@
-package utils;
+package com.chickenfarms.chickenfarms.utils;
 
 public class PageLimitUtils {
     

@@ -13,9 +13,5 @@ public interface CustomersInTicketRepository extends JpaRepository<CustomersInTi
 
     @Query(value = "SELECT * FROM chickenFarm_db.customers_in_ticket_table WHERE ticket_ticket_id=?1",nativeQuery = true)
     Set<CustomersInTicket> getAllByTicket(long ticketId);
-//    
-//    
-//    public Set<Customer> getCustomers() {
-//        return new HashSet<Customer>(createQuery("select c from Customer c", Customer.class).getResultList());
-//    }
+
 }

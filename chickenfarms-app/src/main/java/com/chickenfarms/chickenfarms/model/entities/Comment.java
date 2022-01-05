@@ -15,10 +15,7 @@ import java.util.Date;
 @NoArgsConstructor
 @Entity
 @Table(name="CommentTable")
-public class 
-
-
-Comment {
+public class Comment {
 
     @Id
     @GeneratedValue
@@ -26,26 +23,17 @@ Comment {
     private long commentId;
 
     @ManyToOne
-//    @JoinColumn(name = "ticket_id", nullable = false, insertable = false, updatable = false)
     @JoinColumn(name = "ticket_id")
     private Ticket ticket;
 
-    @Column(name = "commentText")
+    @Column(name = "comment_Text")
     private String commentText;
 
-//    @Column(name = "createdById")
-//    private int createdById;
-
-//    @Column(name = "ticketId")
-//    private int ticketId;
-
-    @Column(name = "createdDate")
+    @Column(name = "created_Date")
     private Date createdDate;
     
     @ManyToOne
-//    @JoinColumn(name = "user_id", nullable = false, insertable = false, updatable = false)
     @JoinColumn(name = "user_id")
     private User user;
-
-
+    
 }

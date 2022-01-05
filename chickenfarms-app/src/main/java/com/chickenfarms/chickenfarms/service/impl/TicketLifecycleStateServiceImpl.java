@@ -5,12 +5,10 @@ import com.chickenfarms.chickenfarms.exception.DBException;
 import com.chickenfarms.chickenfarms.exception.InvalidRequestException;
 import com.chickenfarms.chickenfarms.exception.RecordNotFoundException;
 import com.chickenfarms.chickenfarms.model.Customer;
-import com.chickenfarms.chickenfarms.model.DTO.CreateTicketDetailsDTO;
+import com.chickenfarms.chickenfarms.model.CreateTicketDetailsDTO;
 import com.chickenfarms.chickenfarms.model.entities.*;
-import com.chickenfarms.chickenfarms.repository.CustomersInTicketRepository;
-import com.chickenfarms.chickenfarms.repository.RootCauseRepository;
-import com.chickenfarms.chickenfarms.repository.TicketRepository;
-import com.chickenfarms.chickenfarms.service.DBValidation;
+import com.chickenfarms.chickenfarms.repository.*;
+import com.chickenfarms.chickenfarms.utils.DbValidationUtils;
 import com.chickenfarms.chickenfarms.service.TicketLifecycleStateService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -23,32 +21,32 @@ public class TicketLifecycleStateServiceImpl implements TicketLifecycleStateServ
     private TicketRepository ticketRepository;
     private CustomersInTicketRepository customersInTicketRepository;
     private RootCauseRepository rootCauseRepository;
-    private DBValidation dbValidation;
+    private ProblemRepository problemRepository;
+    private UserRepository userRepository;
+    private CustomerRepository customerRepository;
+
     
     @Autowired
-    public TicketLifecycleStateServiceImpl(TicketRepository ticketRepository, CustomersInTicketRepository customersInTicketRepository, RootCauseRepository rootCauseRepository, DBValidation dbValidation){
+    public TicketLifecycleStateServiceImpl(TicketRepository ticketRepository, CustomersInTicketRepository customersInTicketRepository, RootCauseRepository rootCauseRepository, ProblemRepository problemRepository,UserRepository userRepository,CustomerRepository customerRepository){
         this.ticketRepository=ticketRepository;
         this.customersInTicketRepository=customersInTicketRepository;
         this.rootCauseRepository=rootCauseRepository;
-        this.dbValidation=dbValidation;
+        this.userRepository=userRepository;
+        this.customerRepository=customerRepository;
+        this.problemRepository=problemRepository;
     }
     
     @Override
     public Ticket createNewTicket(CreateTicketDetailsDTO createTicketDetailsDTO) throws RecordNotFoundException, DBException {
-        //check if input valid
-        Problem problem = dbValidation.getProblem(createTicketDetailsDTO.getProblemId());
-        User user = dbValidation.getUser(createTicketDetailsDTO.getUserId());
-//        Customer customer=customerRepository.getById(111);
-        //check if problem doesn't exist
-        //check creted date isn't updated
-        Ticket ticket=Ticket.builder().farmId(createTicketDetailsDTO.getFarmId()).decription(createTicketDetailsDTO.getDescription()).problem(problem).user(user).status(TicketStatus.CREATED.getTicketStatus()).createdDate(new Date(System.currentTimeMillis())).lastUpdatedDate(new Date(System.currentTimeMillis())).isResolved(false).build();
+        Problem problem = DbValidationUtils.getProblem(problemRepository,createTicketDetailsDTO.getProblemId());
+        User user = DbValidationUtils.getUser(userRepository,createTicketDetailsDTO.getUserId());
+        Ticket ticket=Ticket.builder().farmId(createTicketDetailsDTO.getFarmId()).description(createTicketDetailsDTO.getDescription()).problem(problem).user(user).status(TicketStatus.CREATED.getTicketStatus()).createdDate(new Date(System.currentTimeMillis())).lastUpdatedDate(new Date(System.currentTimeMillis())).isResolved(false).build();
         return saveCreatedTicketInDB(createTicketDetailsDTO, ticket);
     }
     
-    //TODO return false in try and catch block
     @Override
     public Ticket moveTicketToCloseStatus(long ticketId,boolean isResolved) throws RecordNotFoundException, InvalidRequestException {
-        Ticket ticket=dbValidation.getTicket(ticketId);
+        Ticket ticket= DbValidationUtils.getTicket(ticketRepository,ticketId);
         validTicketStatus(ticket,TicketStatus.READY);
         setCloseTicketValue(isResolved, ticket);
         return ticketRepository.save(ticket);
@@ -59,7 +57,7 @@ public class TicketLifecycleStateServiceImpl implements TicketLifecycleStateServ
     //move akso the tags
     public Ticket moveTicketToStatusReady(long ticketId,String rootCauseName) throws RecordNotFoundException, InvalidRequestException {
         RootCause rootCause= rootCauseRepository.getByRootCauseName(rootCauseName.toLowerCase());
-        Ticket requestTicket=dbValidation.getTicket(ticketId);
+        Ticket requestTicket= DbValidationUtils.getTicket(ticketRepository,ticketId);
         validTicketStatus(requestTicket,TicketStatus.CREATED);
         if(rootCause==null){
             updateNewRootCause(rootCauseName, requestTicket);
@@ -98,7 +96,6 @@ public class TicketLifecycleStateServiceImpl implements TicketLifecycleStateServ
     }
     
     private void saveReconciledCustomers(Ticket existTicket, Set<CustomersInTicket> customersInTicketCreated) {
-//        try{
             customersInTicketCreated.stream().forEach(customersInTicket -> {
                 customersInTicket.setTicket(existTicket);
                 customersInTicket.setPk(new CustomerInTicketPKId(existTicket.getTicketId(),customersInTicket.getCustomer().getCustomerId()));
@@ -106,11 +103,6 @@ public class TicketLifecycleStateServiceImpl implements TicketLifecycleStateServ
             Set<CustomersInTicket> customersInTicketReady=customersInTicketRepository.getAllByTicket(existTicket.getTicketId());
             customersInTicketReady.addAll(customersInTicketCreated);
             customersInTicketRepository.saveAll(customersInTicketReady);
-//        }
-//        catch (IllegalArgumentException | TransactionalException exception){
-//            throw new DBException("Issue with customersInTicket table.")
-//        }
-
     }
     
     private void updateTicketsInRootCause(RootCause rootCause, Ticket requestTicket, Set<Ticket> ticketsInExistRootCause) {
@@ -161,14 +153,14 @@ public class TicketLifecycleStateServiceImpl implements TicketLifecycleStateServ
     private Ticket saveCreatedTicketInDB(CreateTicketDetailsDTO createTicketDetailsDTO, Ticket ticket) throws RecordNotFoundException, DBException {
         Ticket createdTicket=ticketRepository.save(ticket);
         List<CustomersInTicket> customersInTickets=saveCustomersInTicket(createTicketDetailsDTO, ticket);
-        dbValidation.isInsertAllCustomersInTicket(createTicketDetailsDTO.getCustomersId().size(),customersInTickets.size());
+        DbValidationUtils.isInsertAllCustomersInTicket(createTicketDetailsDTO.getCustomersId().size(),customersInTickets.size());
         return createdTicket;
     }
     
     private List<CustomersInTicket> saveCustomersInTicket(CreateTicketDetailsDTO createTicketDetailsDTO, Ticket ticket) throws RecordNotFoundException {
         List<CustomersInTicket> customersInTickets=new ArrayList<>();
         for (long customerId: createTicketDetailsDTO.getCustomersId()) {
-            Customer customer=dbValidation.getCustomer(customerId);
+            Customer customer= DbValidationUtils.getCustomer(customerRepository,customerId);
             CustomerInTicketPKId customerInTicketPKId=CustomerInTicketPKId.builder().ticketId(ticket.getTicketId()).customerId(customerId).build();
             CustomersInTicket customerInTicket= CustomersInTicket.builder().pk(customerInTicketPKId).addedDate(new Date(System.currentTimeMillis())).customer(customer).ticket(ticket).build();
             customersInTickets.add(customersInTicketRepository.save(customerInTicket));
@@ -181,8 +173,5 @@ public class TicketLifecycleStateServiceImpl implements TicketLifecycleStateServ
         ticket.setResolved(isResolved);
         ticket.setLastUpdatedDate(new Date(System.currentTimeMillis()));
     }
-    
-    
-    
 
 }

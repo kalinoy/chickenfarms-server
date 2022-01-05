@@ -7,7 +7,6 @@ import javax.persistence.*;
 import java.util.*;
 
 @Builder
-//@Data
 @Getter
 @Setter
 @Entity
@@ -21,13 +20,10 @@ public class Ticket  {
     @Column(name = "ticket_id", unique = true,nullable = false)
     private long ticketId;
 
-//    @Column(name = "createdById")
-//    private int createdById;
+    @Column(name = "created_date")
+    private Date createdDate;
 
-    @Column(name = "createdDate")
-    private Date createdDate=new Date(System.currentTimeMillis());
-
-    @Column(name = "lastUpdatedDate")
+    @Column(name = "last_updated_date")
     private Date lastUpdatedDate;
 
     @Column(name = "status")
@@ -39,32 +35,26 @@ public class Ticket  {
     @Column(name = "grade")
     private int grade;
     
-    @Column(name = "decription")
-    private String decription;
+    @Column(name = "description")
+    private String description;
     
-    @Column(name = "farmId")
+    @Column(name = "farm_id")
     private int farmId;
     
-//    @Column(name = "isResolved")
+    @Column(name = "is_resolved")
     private boolean isResolved;
     
-//    @OneToMany(mappedBy = "ticket",fetch = FetchType.LAZY)
-//    @OneToMany(mappedBy = "ticket",cascade = CascadeType.ALL,fetch = FetchType.LAZY)
     @ManyToMany(fetch = FetchType.LAZY,cascade = CascadeType.ALL,mappedBy = "tickets")
     private Set<Tag> tags;
     
-    //fetch when needed
-    //maped by prevent from making more table with the connection
     @OneToMany(mappedBy = "ticket", fetch = FetchType.LAZY)
     private Set<Comment> comments;
 
     @ManyToOne
-//    @JoinColumn(name = "problem_id", nullable = false, insertable = false, updatable = false)
     @JoinColumn(name = "problem_id")
     private Problem problem;
     
     @ManyToOne
-//    @JoinColumn(name = "user_id", nullable = false, insertable = false, updatable = false)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
     
@@ -88,26 +78,4 @@ public class Ticket  {
         }
         return false;
     }
-    
-//    @JsonIgnore
-//    @OneToMany(targetEntity = CustomersInTicket.class,mappedBy = "ticket", fetch = FetchType.LAZY)
-//    @JoinColumn(name = "ticket_id")
-//    @OneToMany(targetEntity = CustomersInTicket.class, cascade = CascadeType.ALL)
-////    @JoinColumn(name="ticket_id", referencedColumnName = "ticket_id")
-//    @JoinColumn(name="ticket_id")
-//
-////    @OneToMany(mappedBy = "ticket",cascade = CascadeType.ALL)
-////    @JoinColumn(name = "ticket_id",referencedColumnName = "id")
-//    private Set<CustomersInTicket> customersInTickets=new HashSet<>();
-    
-//    @ManyToMany    
-//    @JoinTable(name = "customers_in_ticket",
-//            joinColumns = { @JoinColumn(name = "ticket_id") },
-//            inverseJoinColumns = { @JoinColumn(name = "customer_id") })
-//    private Set<Customer> customersInTickets=new HashSet<>();
-    
-//    @OneToMany(mappedBy = "ticket")
-//    private Set<CustomersInTicket> customersInTicket=new HashSet<>();
-
-
 }
