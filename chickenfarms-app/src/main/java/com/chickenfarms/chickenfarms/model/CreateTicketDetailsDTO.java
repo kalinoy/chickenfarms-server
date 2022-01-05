@@ -1,4 +1,4 @@
-package com.chickenfarms.chickenfarms.model.DTO;
+package com.chickenfarms.chickenfarms.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

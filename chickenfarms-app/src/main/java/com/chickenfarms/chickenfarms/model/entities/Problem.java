@@ -15,15 +15,12 @@ import java.util.Set;
 public class Problem {
 
     @Id
-    @Column(name="problemId")
+    @Column(name="problem_Id")
     private int problemId;
 
-    @Column(name="problemName")
+    @Column(name="problem_Name")
     private String problemName;
     
-    
-    //Lombok @Data generates toString for you and you are probably using bidirectiona
-    @ToString.Exclude
     @OneToMany(mappedBy = "problem")
     private Set<Ticket> tickets;
 

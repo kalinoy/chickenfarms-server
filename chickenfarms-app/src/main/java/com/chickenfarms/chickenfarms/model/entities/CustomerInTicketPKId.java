@@ -7,7 +7,8 @@ import javax.persistence.Embeddable;
 import javax.persistence.ManyToOne;
 import java.io.Serializable;
 
-@Data
+@Getter
+@Setter
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
@@ -18,7 +19,6 @@ public class CustomerInTicketPKId implements Serializable {
     private long ticketId;
     
     private long customerId;
-    
     
     @Override
     public boolean equals(Object object){
@@ -46,26 +46,4 @@ public class CustomerInTicketPKId implements Serializable {
         return result;
     }
     
-//    @ManyToOne
-//    private Customer customer;
-
-//    @Id
-////    @Column(name = "ticket_id")
-//    @Column(name = "ticket_id", unique = true,nullable = false)
-//    private long ticketId;
-//    @Id
-////    @ManyToOne
-//    @JoinColumn(name="ticket_id_fk", referencedColumnName = "id")
-//    private long ticketId;
-    
-//    @Id
-//    @Column(name = "ticket_id", unique = true,nullable = false)
-//    private long ticketId;
-//
-//    @Id
-//    @Column(name = "customerId")
-//    private int customerId;
-//    
-  //  @ManyToOne
-  //  private Ticket ticket;
 }

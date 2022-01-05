@@ -11,6 +11,7 @@ import java.util.Set;
 
 @Entity
 @Getter
+@Setter
 @Builder
 @Table(name="CustomerTable")
 public class Customer {
@@ -30,6 +31,5 @@ public class Customer {
     private String customerSurname;
     
     @OneToMany(mappedBy = "customer")
-    @ToString.Exclude
     private Set<CustomersInTicket> customersInTicket=new HashSet<>();
 }

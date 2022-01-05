@@ -6,11 +6,13 @@ import com.chickenfarms.chickenfarms.model.entities.Comment;
 import com.chickenfarms.chickenfarms.model.entities.Ticket;
 import com.chickenfarms.chickenfarms.model.entities.User;
 import com.chickenfarms.chickenfarms.repository.CommentRepository;
-import com.chickenfarms.chickenfarms.service.DBValidation;
+import com.chickenfarms.chickenfarms.repository.TicketRepository;
+import com.chickenfarms.chickenfarms.repository.UserRepository;
+import com.chickenfarms.chickenfarms.utils.DbValidationUtils;
 import com.chickenfarms.chickenfarms.service.TicketCommentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import utils.PageLimitUtils;
+import com.chickenfarms.chickenfarms.utils.PageLimitUtils;
 
 import java.util.Date;
 import java.util.List;
@@ -18,27 +20,30 @@ import java.util.List;
 @Service
 public class TicketCommentServiceImp implements TicketCommentService {
     
-    private DBValidation dbValidation;
     
     private CommentRepository commentRepository;
+    private TicketRepository ticketRepository;
+    private UserRepository userRepository;
+    
     
     @Autowired
-    public TicketCommentServiceImp(DBValidation dbValidation,CommentRepository commentRepository){
-        this.dbValidation=dbValidation;
+    public TicketCommentServiceImp(TicketRepository ticketRepository,CommentRepository commentRepository,UserRepository userRepository){
+        this.ticketRepository=ticketRepository;
         this.commentRepository=commentRepository;
+        this.userRepository=userRepository;
     }
     
     @Override
     public Comment addCommentToTicket(long ticketId,long userId, String textMessage) throws RecordNotFoundException, InvalidRequestException {
-        Ticket ticket=dbValidation.getTicket(ticketId);
-        User user=dbValidation.getUser(userId);
+        Ticket ticket= DbValidationUtils.getTicket(ticketRepository,ticketId);
+        User user= DbValidationUtils.getUser(userRepository,userId);
         Comment comment=Comment.builder().ticket(ticket).user(user).commentText(textMessage).createdDate(new Date(System.currentTimeMillis())).build();
         return commentRepository.save(comment);
     }
     
     @Override
     public List<Comment> getTicketComments(long ticketId,int pageNumber) throws RecordNotFoundException, InvalidRequestException {
-        Ticket ticket=dbValidation.getTicket(ticketId);
+        Ticket ticket= DbValidationUtils.getTicket(ticketRepository,ticketId);
         int startIndex= PageLimitUtils.getStartPageLimit(pageNumber);
         int endIndex=PageLimitUtils.getEndPageLimit(pageNumber);
         return commentRepository.getSortedCommentsByPage(ticket.getTicketId(),startIndex,endIndex);

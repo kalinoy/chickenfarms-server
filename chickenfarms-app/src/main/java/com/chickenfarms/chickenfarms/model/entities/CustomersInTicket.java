@@ -12,15 +12,6 @@ import java.util.Date;
 @Getter
 @Setter
 @Builder
-//@AssociationOverrides({
-//        @AssociationOverride(name = "primaryKey.ticket",
-//                joinColumns = @JoinColumn(name = "ticket_id")),
-//        @AssociationOverride(name = "primaryKey.customer",
-//                joinColumns = @JoinColumn(name = "customer_id")) })
-//@AssociationOverrides({
-//        @AssociationOverride(name = "primaryKey.ticket",
-//                joinColumns = @JoinColumn(name = "ticket_id"))})
-//@IdClass(CustomerInTicketPKId.class)
 public class CustomersInTicket {
     
     @EmbeddedId
@@ -33,11 +24,11 @@ public class CustomersInTicket {
     
     @ManyToOne
     @JoinColumn(name = "customer_customer_id", nullable = false)
-    @MapsId("customerId")
+    @MapsId("customer_Id")
     private Customer customer;
     
     
-    @Column(name = "addedDate")
+    @Column(name = "added_Date")
     private Date addedDate=new Date(System.currentTimeMillis());
     
     @Override
@@ -64,28 +55,5 @@ public class CustomersInTicket {
         result= prime*result+((pk==null)? 0 : pk.hashCode());
         return result;
     }
-
-//    @Id
-//////    @Column(name = "ticket_id")
-//    @Column(name = "ticket_id", unique = true,nullable = false)
-//    private long ticketId;
-////    @Id
-////    @ManyToOne
-////    @JoinColumn(name="ticket_id_fk", referencedColumnName = "id")
-////    private long ticketId;
-//
-//    @Id
-//    @Column(name = "customerId")
-//    private int customerId;
-//
-//    @Column(name = "addedDate")
-//    private Date addedDate=new Date(System.currentTimeMillis());
     
-//    @ManyToOne
-//    @JoinColumn(name = "ticket_id")
-//////    @ToString.Exclude
-////    @JoinColumn(name = "ticket_id", insertable=false, updatable=false)
-//    @ManyToOne
-//    @JoinColumn(name="ticket_id_fk", referencedColumnName = "ticket_id")
-//    private Ticket ticket;
 }

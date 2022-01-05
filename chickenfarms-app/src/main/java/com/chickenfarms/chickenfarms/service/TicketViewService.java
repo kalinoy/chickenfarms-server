@@ -2,11 +2,14 @@ package com.chickenfarms.chickenfarms.service;
 
 import com.chickenfarms.chickenfarms.exception.InvalidRequestException;
 import com.chickenfarms.chickenfarms.exception.RecordNotFoundException;
+import com.chickenfarms.chickenfarms.model.TicketBusinessDetails;
 import com.chickenfarms.chickenfarms.model.entities.Ticket;
 
 import java.util.Set;
 
 public interface TicketViewService {
+    
+    Set<TicketBusinessDetails> getTicketsByPage(int pageNumber);
 
     Set<Ticket> getTicketsByStatus(String status,int pageNumber) throws InvalidRequestException;
     
