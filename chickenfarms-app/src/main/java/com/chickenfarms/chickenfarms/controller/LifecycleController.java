@@ -3,11 +3,15 @@ package com.chickenfarms.chickenfarms.controller;
 import com.chickenfarms.chickenfarms.exception.DBException;
 import com.chickenfarms.chickenfarms.exception.InvalidRequestException;
 import com.chickenfarms.chickenfarms.exception.RecordNotFoundException;
+import com.chickenfarms.chickenfarms.model.ApiResponse;
 import com.chickenfarms.chickenfarms.model.CreateTicketDetailsDTO;
 import com.chickenfarms.chickenfarms.model.entities.Ticket;
-import com.chickenfarms.chickenfarms.service.*;
+import com.chickenfarms.chickenfarms.service.TicketLifecycleStateService;
+import com.chickenfarms.chickenfarms.utils.ApiResponseUtils;
+import com.chickenfarms.chickenfarms.utils.BusinessDetailsConverterUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -25,18 +29,20 @@ public class LifecycleController {
     }
     
     @PostMapping(value = "/create",consumes = {MediaType.APPLICATION_JSON_VALUE})
-    public long createNewTicket(@RequestBody @Valid CreateTicketDetailsDTO createTicketDetailsDTO) throws RecordNotFoundException, DBException {
+    public ResponseEntity<ApiResponse> createNewTicket(@RequestBody @Valid CreateTicketDetailsDTO createTicketDetailsDTO) throws RecordNotFoundException, DBException {
         Ticket ticket= ticketLifecycleStateService.createNewTicket(createTicketDetailsDTO);
-        return ticket.getTicketId();
+        return ApiResponseUtils.getApiResponse(BusinessDetailsConverterUtils.getTicketBusinessDetails(ticket));
     }
     
     @PostMapping(value = "/{ticket_id}/close")
-    public Ticket moveTicketToCloseStatus(@PathVariable("ticket_id") @Valid long ticketId, @RequestParam("is_resolved") @Valid boolean isResolved) throws RecordNotFoundException, InvalidRequestException {
-        return ticketLifecycleStateService.moveTicketToCloseStatus(ticketId,isResolved);
+    public ResponseEntity<ApiResponse> moveTicketToCloseStatus(@PathVariable("ticket_id") @Valid long ticketId, @RequestParam("is_resolved") @Valid boolean isResolved) throws RecordNotFoundException, InvalidRequestException {
+        Ticket ticket= ticketLifecycleStateService.moveTicketToCloseStatus(ticketId,isResolved);
+        return ApiResponseUtils.getApiResponse(BusinessDetailsConverterUtils.getTicketBusinessDetails(ticket));
     }
     
     @PostMapping(value = "/{ticket_id}/ready")
-    public Ticket moveTicketToReadyStatus(@PathVariable("ticket_id")  @Valid long ticketId,@RequestParam("root_cause") @Valid @NotBlank String rootCause) throws RecordNotFoundException, InvalidRequestException {
-        return ticketLifecycleStateService.moveTicketToStatusReady(ticketId,rootCause);
+    public ResponseEntity<ApiResponse> moveTicketToReadyStatus(@PathVariable("ticket_id")  @Valid long ticketId,@RequestParam("root_cause") @Valid @NotBlank String rootCause) throws RecordNotFoundException, InvalidRequestException {
+        Ticket ticket= ticketLifecycleStateService.moveTicketToStatusReady(ticketId,rootCause);
+        return ApiResponseUtils.getApiResponse(BusinessDetailsConverterUtils.getTicketBusinessDetails(ticket));
     }
 }

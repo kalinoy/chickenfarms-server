@@ -44,6 +44,7 @@ public class TicketViewServiceTest {
     @Mock
     RootCauseRepository rootCauseRepository;
 
+
     @Test
     public void getTicketsByPageOneTest(){
         ticketViewService.getTicketsByPage(1);

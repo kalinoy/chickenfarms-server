@@ -7,7 +7,7 @@ import com.chickenfarms.chickenfarms.model.CreateTicketDetailsDTO;
 import com.chickenfarms.chickenfarms.model.entities.Ticket;
 
 public interface TicketLifecycleStateService {
-
+    
     Ticket createNewTicket(CreateTicketDetailsDTO createTicketDetailsDTO) throws RecordNotFoundException, DBException;
     
     Ticket moveTicketToCloseStatus(long ticketId,boolean isResolved) throws RecordNotFoundException, InvalidRequestException;

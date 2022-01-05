@@ -6,8 +6,8 @@ import com.chickenfarms.chickenfarms.model.entities.Problem;
 import com.chickenfarms.chickenfarms.model.entities.Ticket;
 import com.chickenfarms.chickenfarms.repository.ProblemRepository;
 import com.chickenfarms.chickenfarms.repository.TicketRepository;
-import com.chickenfarms.chickenfarms.utils.DbValidationUtils;
 import com.chickenfarms.chickenfarms.service.TicketEditorDetailsService;
+import com.chickenfarms.chickenfarms.utils.DbValidationUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
