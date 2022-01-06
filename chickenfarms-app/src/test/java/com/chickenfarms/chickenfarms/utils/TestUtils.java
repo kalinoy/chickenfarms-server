@@ -4,7 +4,7 @@ import com.chickenfarms.chickenfarms.enums.TicketStatus;
 import com.chickenfarms.chickenfarms.exception.RecordNotFoundException;
 import com.chickenfarms.chickenfarms.model.CreateTicketDetailsDTO;
 import com.chickenfarms.chickenfarms.model.Customer;
-import com.chickenfarms.chickenfarms.model.entities.*;
+import com.chickenfarms.chickenfarms.model.entity.*;
 import com.chickenfarms.chickenfarms.repository.TicketRepository;
 
 import java.util.*;

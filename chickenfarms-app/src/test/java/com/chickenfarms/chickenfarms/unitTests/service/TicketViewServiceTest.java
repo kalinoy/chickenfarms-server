@@ -2,10 +2,10 @@ package com.chickenfarms.chickenfarms.unitTests.service;
 
 import com.chickenfarms.chickenfarms.exception.InvalidRequestException;
 import com.chickenfarms.chickenfarms.exception.RecordNotFoundException;
-import com.chickenfarms.chickenfarms.model.entities.Problem;
-import com.chickenfarms.chickenfarms.model.entities.RootCause;
-import com.chickenfarms.chickenfarms.model.entities.Tag;
-import com.chickenfarms.chickenfarms.model.entities.Ticket;
+import com.chickenfarms.chickenfarms.model.entity.Problem;
+import com.chickenfarms.chickenfarms.model.entity.RootCause;
+import com.chickenfarms.chickenfarms.model.entity.Tag;
+import com.chickenfarms.chickenfarms.model.entity.Ticket;
 import com.chickenfarms.chickenfarms.repository.ProblemRepository;
 import com.chickenfarms.chickenfarms.repository.RootCauseRepository;
 import com.chickenfarms.chickenfarms.repository.TagRepository;

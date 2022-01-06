@@ -2,12 +2,9 @@ package com.chickenfarms.chickenfarms.service.impl;
 
 import com.chickenfarms.chickenfarms.exception.InvalidRequestException;
 import com.chickenfarms.chickenfarms.exception.RecordNotFoundException;
-import com.chickenfarms.chickenfarms.model.CommentBusinessDetails;
-import com.chickenfarms.chickenfarms.model.TicketBusinessDetails;
-import com.chickenfarms.chickenfarms.model.entities.Comment;
-import com.chickenfarms.chickenfarms.model.entities.Tag;
-import com.chickenfarms.chickenfarms.model.entities.Ticket;
-import com.chickenfarms.chickenfarms.model.entities.User;
+import com.chickenfarms.chickenfarms.model.entity.Comment;
+import com.chickenfarms.chickenfarms.model.entity.Ticket;
+import com.chickenfarms.chickenfarms.model.entity.User;
 import com.chickenfarms.chickenfarms.repository.CommentRepository;
 import com.chickenfarms.chickenfarms.repository.TicketRepository;
 import com.chickenfarms.chickenfarms.repository.UserRepository;
@@ -18,7 +15,6 @@ import org.springframework.stereotype.Service;
 import com.chickenfarms.chickenfarms.utils.PageLimitUtils;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 public class TicketCommentServiceImp implements TicketCommentService {

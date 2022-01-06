@@ -1,6 +1,6 @@
 package com.chickenfarms.chickenfarms.repository;
 
-import com.chickenfarms.chickenfarms.model.entities.Comment;
+import com.chickenfarms.chickenfarms.model.entity.Comment;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 

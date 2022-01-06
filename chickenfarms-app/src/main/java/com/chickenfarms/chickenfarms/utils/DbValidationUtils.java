@@ -3,9 +3,8 @@ package com.chickenfarms.chickenfarms.utils;
 import com.chickenfarms.chickenfarms.exception.DBException;
 import com.chickenfarms.chickenfarms.exception.RecordNotFoundException;
 import com.chickenfarms.chickenfarms.model.Customer;
-import com.chickenfarms.chickenfarms.model.entities.*;
+import com.chickenfarms.chickenfarms.model.entity.*;
 import com.chickenfarms.chickenfarms.repository.*;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service

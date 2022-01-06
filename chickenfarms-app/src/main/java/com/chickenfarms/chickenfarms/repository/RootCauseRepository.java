@@ -1,6 +1,6 @@
 package com.chickenfarms.chickenfarms.repository;
 
-import com.chickenfarms.chickenfarms.model.entities.RootCause;
+import com.chickenfarms.chickenfarms.model.entity.RootCause;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;

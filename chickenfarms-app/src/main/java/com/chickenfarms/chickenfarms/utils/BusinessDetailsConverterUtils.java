@@ -4,9 +4,9 @@ import com.chickenfarms.chickenfarms.enums.TicketStatus;
 import com.chickenfarms.chickenfarms.model.CommentBusinessDetails;
 import com.chickenfarms.chickenfarms.model.TagBusinessDetails;
 import com.chickenfarms.chickenfarms.model.TicketBusinessDetails;
-import com.chickenfarms.chickenfarms.model.entities.Comment;
-import com.chickenfarms.chickenfarms.model.entities.Tag;
-import com.chickenfarms.chickenfarms.model.entities.Ticket;
+import com.chickenfarms.chickenfarms.model.entity.Comment;
+import com.chickenfarms.chickenfarms.model.entity.Tag;
+import com.chickenfarms.chickenfarms.model.entity.Ticket;
 
 import java.util.ArrayList;
 import java.util.HashSet;
