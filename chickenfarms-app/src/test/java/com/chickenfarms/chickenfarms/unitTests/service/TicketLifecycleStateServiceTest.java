@@ -5,7 +5,7 @@ import com.chickenfarms.chickenfarms.enums.TicketStatus;
 import com.chickenfarms.chickenfarms.exception.DBException;
 import com.chickenfarms.chickenfarms.exception.InvalidRequestException;
 import com.chickenfarms.chickenfarms.exception.RecordNotFoundException;
-import com.chickenfarms.chickenfarms.model.CreateTicketDetailsDTO;
+import com.chickenfarms.chickenfarms.model.CreatedTicketDetailsPayload;
 import com.chickenfarms.chickenfarms.model.Customer;
 import com.chickenfarms.chickenfarms.model.entity.CustomersInTicket;
 import com.chickenfarms.chickenfarms.model.entity.RootCause;
@@ -47,14 +47,14 @@ public class TicketLifecycleStateServiceTest {
 
     @Test
     public void createNewTicketSuccessfullyTest() {
-        CreateTicketDetailsDTO createTicketDetailsDTO = new CreateTicketDetailsDTO("A user name issue", 101, new ArrayList<Long>(Arrays.asList(111L)), 1, 3);
+        CreatedTicketDetailsPayload createdTicketDetailsPayload = new CreatedTicketDetailsPayload("A user name issue", 101, new ArrayList<Long>(Arrays.asList(111L)), 1, 3);
         Customer customerInDB = TestUtils.getCustomer(111L, "scohen");
-        Ticket ticket = TestUtils.getTicketFromCreatedTicketDTO(createTicketDetailsDTO, TicketStatus.CREATED);
+        Ticket ticket = TestUtils.getTicketFromCreatedTicketDTO(createdTicketDetailsPayload, TicketStatus.CREATED);
         try {
             when(problemRepository.findById(101)).thenReturn(Optional.of(ticket.getProblem()));
             when(userRepository.findById(1L)).thenReturn(Optional.of(ticket.getUser()));
             when(customerRepository.findById(111L)).thenReturn(Optional.of(customerInDB));
-            Ticket createdTicket = ticketLifecycleStateService.createNewTicket(createTicketDetailsDTO);
+            Ticket createdTicket = ticketLifecycleStateService.createNewTicket(createdTicketDetailsPayload);
             Mockito.verify(ticketRepository).save(Mockito.any(Ticket.class));
             Mockito.verify(customersInTicketRepository).save(Mockito.any(CustomersInTicket.class));
         } catch (RecordNotFoundException | DBException e) {
@@ -89,7 +89,7 @@ public class TicketLifecycleStateServiceTest {
     public void moveTicketToReadyWithNewRootCause(){
         try {
             when(rootCauseRepository.getByRootCauseName(Mockito.anyString())).thenReturn(null);
-            CreateTicketDetailsDTO createTicketDetailsDTO = new CreateTicketDetailsDTO("A user name issue", 101, new ArrayList<Long>(Arrays.asList(111L)), 1, 3);
+            CreatedTicketDetailsPayload createdTicketDetailsPayload = new CreatedTicketDetailsPayload("A user name issue", 101, new ArrayList<Long>(Arrays.asList(111L)), 1, 3);
             Ticket mockedTicket=TestUtils.getMockedTicket(ticketRepository,TicketStatus.CREATED);
             Ticket returnedTicket = ticketLifecycleStateService.moveTicketToStatusReady(mockedTicket.getTicketId(), "Bad credentials");
             assertTicketMoveToReadyWithNewRootCause(returnedTicket);
@@ -134,7 +134,7 @@ public class TicketLifecycleStateServiceTest {
     public void moveTicketToReadyWithStatusReconciled(){
         try {
             when(rootCauseRepository.getByRootCauseName(Mockito.anyString())).thenReturn(null);
-            CreateTicketDetailsDTO createTicketDetailsDTO = new CreateTicketDetailsDTO("A user name issue", 101, new ArrayList<Long>(Arrays.asList(111L)), 1, 1);
+            CreatedTicketDetailsPayload createdTicketDetailsPayload = new CreatedTicketDetailsPayload("A user name issue", 101, new ArrayList<Long>(Arrays.asList(111L)), 1, 1);
             Ticket mockedTicket=TestUtils.getMockedTicket(ticketRepository,TicketStatus.RECONCILED);
             ticketLifecycleStateService.moveTicketToStatusReady(mockedTicket.getTicketId(),"Bad credentials");
 

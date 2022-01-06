@@ -2,10 +2,13 @@ package com.chickenfarms.chickenfarms.utils;
 
 import com.chickenfarms.chickenfarms.enums.TicketStatus;
 import com.chickenfarms.chickenfarms.exception.RecordNotFoundException;
-import com.chickenfarms.chickenfarms.model.CreateTicketDetailsDTO;
+import com.chickenfarms.chickenfarms.model.ApiResponse;
+import com.chickenfarms.chickenfarms.model.CreatedTicketDetailsPayload;
 import com.chickenfarms.chickenfarms.model.Customer;
 import com.chickenfarms.chickenfarms.model.entity.*;
 import com.chickenfarms.chickenfarms.repository.TicketRepository;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.client.RestTemplate;
 
 import java.util.*;
 
@@ -48,15 +51,22 @@ public class TestUtils {
     }
     
     public static Ticket getMockedTicket(TicketRepository ticketRepository,TicketStatus ticketStatus) throws RecordNotFoundException {
-        CreateTicketDetailsDTO createTicketDetailsDTO = new CreateTicketDetailsDTO("A user name issue", 101, new ArrayList<Long>(Arrays.asList(111L)), 1, 3);
-        Ticket ticket = getTicketFromCreatedTicketDTO(createTicketDetailsDTO, ticketStatus);
+        CreatedTicketDetailsPayload createdTicketDetailsPayload = new CreatedTicketDetailsPayload("A user name issue", 101, new ArrayList<Long>(Arrays.asList(111L)), 1, 3);
+        Ticket ticket = getTicketFromCreatedTicketDTO(createdTicketDetailsPayload, ticketStatus);
         when(ticketRepository.findById(ticket.getTicketId())).thenReturn(Optional.of(ticket));
         return ticket;
     }
 
-    public static Ticket getTicketFromCreatedTicketDTO(CreateTicketDetailsDTO createTicketDetailsDTO, TicketStatus ticketStatus) {
+    public static Ticket getTicketFromCreatedTicketDTO(CreatedTicketDetailsPayload createdTicketDetailsPayload, TicketStatus ticketStatus) {
         Problem problemInDB = TestUtils.getProblem(101, "General issue");
         User userInDB = TestUtils.getUser(1L, "lkalachman", "Enginner");
-        return Ticket.builder().farmId(createTicketDetailsDTO.getFarmId()).description(createTicketDetailsDTO.getDescription()).problem(problemInDB).user(userInDB).status(ticketStatus.getTicketStatus()).createdDate(new Date(System.currentTimeMillis())).lastUpdatedDate(new Date(System.currentTimeMillis())).isResolved(false).build();
+        return Ticket.builder().farmId(createdTicketDetailsPayload.getFarmId()).description(createdTicketDetailsPayload.getDescription()).problem(problemInDB).user(userInDB).status(ticketStatus.getTicketStatus()).createdDate(new Date(System.currentTimeMillis())).lastUpdatedDate(new Date(System.currentTimeMillis())).isResolved(false).build();
+    }
+    
+    public static ResponseEntity<ApiResponse> getApiResponseForCreatedTicket(RestTemplate restTemplate,int randomServerPort) {
+        String  requestUrl = new StringBuilder("http://localhost:").append(randomServerPort).append("/chickenFarms/lifecycle/ticket/create").toString();
+        CreatedTicketDetailsPayload createdTicketDetailsPayload =new CreatedTicketDetailsPayload("New description",101,new ArrayList<>(Arrays.asList(1L,2L)),1,2);;
+        ResponseEntity<ApiResponse> responseEntity=restTemplate.postForEntity(requestUrl.toString(), createdTicketDetailsPayload, ApiResponse.class);
+        return responseEntity;
     }
 }

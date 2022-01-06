@@ -5,7 +5,7 @@ import com.chickenfarms.chickenfarms.exception.DBException;
 import com.chickenfarms.chickenfarms.exception.InvalidRequestException;
 import com.chickenfarms.chickenfarms.exception.RecordNotFoundException;
 import com.chickenfarms.chickenfarms.model.Customer;
-import com.chickenfarms.chickenfarms.model.CreateTicketDetailsDTO;
+import com.chickenfarms.chickenfarms.model.CreatedTicketDetailsPayload;
 import com.chickenfarms.chickenfarms.model.entity.*;
 import com.chickenfarms.chickenfarms.repository.*;
 import com.chickenfarms.chickenfarms.utils.DbValidationUtils;
@@ -37,11 +37,11 @@ public class TicketLifecycleStateServiceImpl implements TicketLifecycleStateServ
     }
     
     @Override
-    public Ticket createNewTicket(CreateTicketDetailsDTO createTicketDetailsDTO) throws RecordNotFoundException, DBException {
-        Problem problem = DbValidationUtils.getProblem(problemRepository,createTicketDetailsDTO.getProblemId());
-        User user = DbValidationUtils.getUser(userRepository,createTicketDetailsDTO.getUserId());
-        Ticket ticket=Ticket.builder().farmId(createTicketDetailsDTO.getFarmId()).description(createTicketDetailsDTO.getDescription()).problem(problem).user(user).status(TicketStatus.CREATED.getTicketStatus()).createdDate(new Date(System.currentTimeMillis())).lastUpdatedDate(new Date(System.currentTimeMillis())).isResolved(false).build();
-        return saveCreatedTicketInDB(createTicketDetailsDTO, ticket);
+    public Ticket createNewTicket(CreatedTicketDetailsPayload createdTicketDetailsPayload) throws RecordNotFoundException, DBException {
+        Problem problem = DbValidationUtils.getProblem(problemRepository, createdTicketDetailsPayload.getProblemId());
+        User user = DbValidationUtils.getUser(userRepository, createdTicketDetailsPayload.getUserId());
+        Ticket ticket=Ticket.builder().farmId(createdTicketDetailsPayload.getFarmId()).description(createdTicketDetailsPayload.getDescription()).problem(problem).user(user).status(TicketStatus.CREATED.getTicketStatus()).createdDate(new Date(System.currentTimeMillis())).lastUpdatedDate(new Date(System.currentTimeMillis())).isResolved(false).build();
+        return saveCreatedTicketInDB(createdTicketDetailsPayload, ticket);
     }
     
     @Override
@@ -149,16 +149,16 @@ public class TicketLifecycleStateServiceImpl implements TicketLifecycleStateServ
     ////    @Transactional
 ////    @Transactional(readOnly = false,isolation = Isolation.READ_COMMITTED,propagation = Propagation.REQUIRED)
 ////    @Transactional(propagation=Propagation.REQUIRED,rollbackFor =Exception.class)
-    private Ticket saveCreatedTicketInDB(CreateTicketDetailsDTO createTicketDetailsDTO, Ticket ticket) throws RecordNotFoundException, DBException {
+    private Ticket saveCreatedTicketInDB(CreatedTicketDetailsPayload createdTicketDetailsPayload, Ticket ticket) throws RecordNotFoundException, DBException {
         Ticket createdTicket=ticketRepository.save(ticket);
-        List<CustomersInTicket> customersInTickets=saveCustomersInTicket(createTicketDetailsDTO, ticket);
-        DbValidationUtils.isInsertAllCustomersInTicket(createTicketDetailsDTO.getCustomersId().size(),customersInTickets.size());
+        List<CustomersInTicket> customersInTickets=saveCustomersInTicket(createdTicketDetailsPayload, ticket);
+        DbValidationUtils.isInsertAllCustomersInTicket(createdTicketDetailsPayload.getCustomersId().size(),customersInTickets.size());
         return createdTicket;
     }
     
-    private List<CustomersInTicket> saveCustomersInTicket(CreateTicketDetailsDTO createTicketDetailsDTO, Ticket ticket) throws RecordNotFoundException {
+    private List<CustomersInTicket> saveCustomersInTicket(CreatedTicketDetailsPayload createdTicketDetailsPayload, Ticket ticket) throws RecordNotFoundException {
         List<CustomersInTicket> customersInTickets=new ArrayList<>();
-        for (long customerId: createTicketDetailsDTO.getCustomersId()) {
+        for (long customerId: createdTicketDetailsPayload.getCustomersId()) {
             Customer customer= DbValidationUtils.getCustomer(customerRepository,customerId);
             CustomerInTicketPKId customerInTicketPKId=CustomerInTicketPKId.builder().ticketId(ticket.getTicketId()).customerId(customerId).build();
             CustomersInTicket customerInTicket= CustomersInTicket.builder().pk(customerInTicketPKId).addedDate(new Date(System.currentTimeMillis())).customer(customer).ticket(ticket).build();
