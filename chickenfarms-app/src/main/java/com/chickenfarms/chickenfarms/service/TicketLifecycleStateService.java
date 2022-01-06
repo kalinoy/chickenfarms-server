@@ -4,7 +4,7 @@ import com.chickenfarms.chickenfarms.exception.DBException;
 import com.chickenfarms.chickenfarms.exception.InvalidRequestException;
 import com.chickenfarms.chickenfarms.exception.RecordNotFoundException;
 import com.chickenfarms.chickenfarms.model.CreateTicketDetailsDTO;
-import com.chickenfarms.chickenfarms.model.entities.Ticket;
+import com.chickenfarms.chickenfarms.model.entity.Ticket;
 
 public interface TicketLifecycleStateService {
     

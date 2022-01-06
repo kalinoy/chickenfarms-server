@@ -2,8 +2,8 @@ package com.chickenfarms.chickenfarms.service.impl;
 
 import com.chickenfarms.chickenfarms.exception.InvalidRequestException;
 import com.chickenfarms.chickenfarms.exception.RecordNotFoundException;
-import com.chickenfarms.chickenfarms.model.entities.Problem;
-import com.chickenfarms.chickenfarms.model.entities.Ticket;
+import com.chickenfarms.chickenfarms.model.entity.Problem;
+import com.chickenfarms.chickenfarms.model.entity.Ticket;
 import com.chickenfarms.chickenfarms.repository.ProblemRepository;
 import com.chickenfarms.chickenfarms.repository.TicketRepository;
 import com.chickenfarms.chickenfarms.service.TicketEditorDetailsService;

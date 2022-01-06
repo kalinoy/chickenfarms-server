@@ -1,7 +1,7 @@
 package com.chickenfarms.chickenfarms.repository;
 
-import com.chickenfarms.chickenfarms.model.entities.CustomerInTicketPKId;
-import com.chickenfarms.chickenfarms.model.entities.CustomersInTicket;
+import com.chickenfarms.chickenfarms.model.entity.CustomerInTicketPKId;
+import com.chickenfarms.chickenfarms.model.entity.CustomersInTicket;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;

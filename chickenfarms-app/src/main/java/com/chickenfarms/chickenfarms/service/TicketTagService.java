@@ -2,7 +2,7 @@ package com.chickenfarms.chickenfarms.service;
 
 import com.chickenfarms.chickenfarms.exception.InnerServiceException;
 import com.chickenfarms.chickenfarms.exception.RecordNotFoundException;
-import com.chickenfarms.chickenfarms.model.entities.Tag;
+import com.chickenfarms.chickenfarms.model.entity.Tag;
 
 import java.util.List;
 

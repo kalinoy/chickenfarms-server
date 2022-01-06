@@ -6,12 +6,10 @@ import com.chickenfarms.chickenfarms.exception.InvalidRequestException;
 import com.chickenfarms.chickenfarms.exception.RecordNotFoundException;
 import com.chickenfarms.chickenfarms.model.Customer;
 import com.chickenfarms.chickenfarms.model.CreateTicketDetailsDTO;
-import com.chickenfarms.chickenfarms.model.TicketBusinessDetails;
-import com.chickenfarms.chickenfarms.model.entities.*;
+import com.chickenfarms.chickenfarms.model.entity.*;
 import com.chickenfarms.chickenfarms.repository.*;
 import com.chickenfarms.chickenfarms.utils.DbValidationUtils;
 import com.chickenfarms.chickenfarms.service.TicketLifecycleStateService;
-import com.chickenfarms.chickenfarms.utils.BusinessDetailsConverterUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

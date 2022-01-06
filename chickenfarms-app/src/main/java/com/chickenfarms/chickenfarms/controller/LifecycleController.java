@@ -5,7 +5,7 @@ import com.chickenfarms.chickenfarms.exception.InvalidRequestException;
 import com.chickenfarms.chickenfarms.exception.RecordNotFoundException;
 import com.chickenfarms.chickenfarms.model.ApiResponse;
 import com.chickenfarms.chickenfarms.model.CreateTicketDetailsDTO;
-import com.chickenfarms.chickenfarms.model.entities.Ticket;
+import com.chickenfarms.chickenfarms.model.entity.Ticket;
 import com.chickenfarms.chickenfarms.service.TicketLifecycleStateService;
 import com.chickenfarms.chickenfarms.utils.ApiResponseUtils;
 import com.chickenfarms.chickenfarms.utils.BusinessDetailsConverterUtils;

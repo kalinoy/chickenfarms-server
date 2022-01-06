@@ -2,7 +2,7 @@ package com.chickenfarms.chickenfarms.service;
 
 import com.chickenfarms.chickenfarms.exception.InvalidRequestException;
 import com.chickenfarms.chickenfarms.exception.RecordNotFoundException;
-import com.chickenfarms.chickenfarms.model.entities.Comment;
+import com.chickenfarms.chickenfarms.model.entity.Comment;
 
 import java.util.List;
 
