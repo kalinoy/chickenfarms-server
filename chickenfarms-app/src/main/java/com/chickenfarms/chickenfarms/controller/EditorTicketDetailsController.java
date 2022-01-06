@@ -14,6 +14,7 @@ import com.chickenfarms.chickenfarms.service.TicketViewService;
 import com.chickenfarms.chickenfarms.utils.ApiResponseUtils;
 import com.chickenfarms.chickenfarms.utils.BusinessDetailsConverterUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -39,27 +40,27 @@ public class EditorTicketDetailsController {
         this.ticketTagService=ticketTagService;
     }
     
-    @PutMapping(value = "/addTags")
-    public ResponseEntity<ApiResponse> addTagsToTicket(@PathVariable("ticket_id") @Valid long ticketId, @RequestParam("tags") @Valid @NotEmpty List<String> tags) throws RecordNotFoundException, InnerServiceException {
+    @PutMapping(value = "/addTags", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ApiResponse> addTagsToTicket(@PathVariable("ticket_id") @Valid long ticketId, @RequestBody @Valid @NotEmpty List<String> tags) throws RecordNotFoundException, InnerServiceException {
         List<Tag> tagsList= ticketTagService.addTags(ticketId,tags);
         return ApiResponseUtils.getApiResponse(BusinessDetailsConverterUtils.getTagBusinessDetailsList(tagsList));
     }
     
     
     @PutMapping(value = "/editDescription")
-    public ResponseEntity<ApiResponse> editTicketDescription(@PathVariable("ticket_id") @Valid long ticketId, @RequestParam("description") @Valid @NotBlank String description) throws RecordNotFoundException {
+    public ResponseEntity<ApiResponse> editTicketDescription(@PathVariable("ticket_id") @Valid long ticketId, @RequestBody @Valid @NotBlank String description) throws RecordNotFoundException {
         Ticket ticket= ticketEditorDetailsService.editTicketDescription(ticketId,description);
         return ApiResponseUtils.getApiResponse(BusinessDetailsConverterUtils.getTicketBusinessDetails(ticket));
     }
     
-    @PutMapping(value = "/editProblem")
-    public ResponseEntity<ApiResponse> editTicketProblem(@PathVariable("ticket_id")  @Valid long ticketId, @RequestParam("problem_id") @Valid int problemId) throws InvalidRequestException, RecordNotFoundException {
+    @PutMapping(value = "/editProblem/{problem_id}")
+    public ResponseEntity<ApiResponse> editTicketProblem(@PathVariable("ticket_id")  @Valid long ticketId, @PathVariable("problem_id") @Valid int problemId) throws InvalidRequestException, RecordNotFoundException {
         Ticket ticket= ticketEditorDetailsService.editTicketProblem(ticketId,problemId);
         return ApiResponseUtils.getApiResponse(BusinessDetailsConverterUtils.getTicketBusinessDetails(ticket));
     }
     
-    @PostMapping(value = "/addComment")
-    public ResponseEntity<ApiResponse> addTicketComment(@PathVariable("ticket_id")  @Valid long ticketId, @RequestParam("user_id") @Valid long userId, @RequestParam("text_message") @Valid @NotBlank String textMessage) throws InvalidRequestException, RecordNotFoundException {
+    @PostMapping(value = "/addComment/user/{user_id}")
+    public ResponseEntity<ApiResponse> addTicketComment(@PathVariable("ticket_id")  @Valid long ticketId, @PathVariable("user_id") @Valid long userId, @RequestBody @Valid @NotBlank String textMessage) throws InvalidRequestException, RecordNotFoundException {
         Comment comment= ticketCommentService.addCommentToTicket(ticketId,userId,textMessage);
         return ApiResponseUtils.getApiResponse(BusinessDetailsConverterUtils.getCommentBusinessDetails(comment));
     }

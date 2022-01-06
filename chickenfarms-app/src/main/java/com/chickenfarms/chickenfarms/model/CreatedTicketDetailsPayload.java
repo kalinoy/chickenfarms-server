@@ -10,7 +10,7 @@ import java.util.List;
 
 @Getter
 @AllArgsConstructor
-public class CreateTicketDetailsDTO {
+public class CreatedTicketDetailsPayload {
     
     @NotBlank
     private String description;
